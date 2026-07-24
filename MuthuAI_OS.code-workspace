@@ -1,8 +1,58 @@
 {
 	"folders": [
 		{
+			"name": "MuthuAI OS - Core",
 			"path": "."
+		},
+		{
+			"name": "AI Agents",
+			"path": "agents"
+		},
+		{
+			"name": "Automation & n8n",
+			"path": "automation"
+		},
+		{
+			"name": "Backend",
+			"path": "backend"
+		},
+		{
+			"name": "Frontend",
+			"path": "frontend"
+		},
+		{
+			"name": "Database",
+			"path": "database"
+		},
+		{
+			"name": "Documentation",
+			"path": "docs"
+		},
+		{
+			"name": "Projects",
+			"path": "projects"
+		},
+		{
+			"name": "Scripts",
+			"path": "scripts"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.DS_Store": true,
+			"**/__pycache__": true,
+			"**/.pytest_cache": true
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/.git": true,
+			"**/backups": true
+		},
+		"editor.formatOnSave": true,
+		"editor.tabSize": 4,
+		"terminal.integrated.defaultProfile.windows": "PowerShell",
+		"python.analysis.autoImportCompletions": true,
+		"git.autofetch": true
+	}
 }
