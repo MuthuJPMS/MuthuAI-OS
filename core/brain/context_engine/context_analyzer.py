@@ -1,36 +1,51 @@
 from datetime import datetime
 
-from core.memory.v2.retrieval_engine import retrieval_engine
-
 
 class ContextAnalyzer:
 
-
     def analyze(self, task):
 
-        keywords = task.split()
+        task_lower = task.lower()
 
-        matches = []
+        category = "general"
+        complexity = "medium"
 
-        for keyword in keywords:
+        if any(word in task_lower for word in [
+            "money",
+            "investment",
+            "finance",
+            "wealth",
+            "asset"
+        ]):
+            category = "finance"
 
-            result = retrieval_engine.search_memory(
-                keyword
-            )
+        elif any(word in task_lower for word in [
+            "insurance",
+            "advisor",
+            "policy",
+            "sales"
+        ]):
+            category = "business"
 
-            if result["count"] > 0:
-                matches.extend(
-                    result["matches"]
-                )
+        elif any(word in task_lower for word in [
+            "code",
+            "software",
+            "app",
+            "technology"
+        ]):
+            category = "technology"
+
+
+        if len(task.split()) > 8:
+            complexity = "high"
 
 
         return {
             "task": task,
-            "previous_experiences": matches,
-            "experience_count": len(matches),
-            "analyzed_at": datetime.now().isoformat()
+            "category": category,
+            "complexity": complexity,
+            "context_time": datetime.now().isoformat()
         }
-
 
 
 context_analyzer = ContextAnalyzer()
