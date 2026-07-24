@@ -1,0 +1,26 @@
+{
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/node_modules": true
+    },
+
+    "search.exclude": {
+        "**/.git": true,
+        "**/backups": true,
+        "**/logs": true
+    },
+
+    "python.analysis.autoImportCompletions": true,
+
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+
+    "git.autofetch": true,
+
+    "yaml.validate": true,
+
+    "markdown.preview.breaks": true
+}

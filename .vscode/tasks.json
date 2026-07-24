@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Git Backup",
+            "type": "shell",
+            "command": "git add . && git commit -m \"backup\" && git push origin main",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start n8n",
+            "type": "shell",
+            "command": "docker compose up",
+            "problemMatcher": []
+        }
+    ]
+}
