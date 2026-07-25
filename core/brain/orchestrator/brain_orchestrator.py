@@ -1,8 +1,10 @@
-from core.decision.decision_engine import decision_engine
-
 from datetime import datetime
 
+from core.decision.decision_engine import decision_engine
+
 from core.kernel.os_kernel import muthuai_kernel
+
+from core.mission.integration.brain_mission_bridge import brain_mission_bridge
 
 from core.workflows.workflow_engine import workflow_engine
 
@@ -21,88 +23,147 @@ class BrainOrchestrator:
 
 
     def __init__(self):
-	
-	self.decision = decision_engine	
+
         self.kernel = muthuai_kernel
+
         self.workflow = workflow_engine
+
         self.router = agent_router
+
         self.executor = multi_agent_executor
+
         self.merger = agent_result_merger
+
         self.memory = memory_bridge
+
         self.learning = learning_engine
+
+        self.decision = decision_engine
+
+        self.mission = brain_mission_bridge
 
 
 
     def process(self, goal):
 
         print("MuthuAI Brain Processing Started...")
-	
-	decision_result = self.decision.evaluate(goal)
 
-        # 1. Create kernel task
+
+        # Decision Layer
+
+        decision_result = self.decision.evaluate(goal)
+
+
+        if decision_result["final_decision"] == "approval_required":
+
+            return {
+
+                "status": "waiting_for_approval",
+
+                "decision": decision_result
+
+            }
+
+
+
+        # Mission Layer
+
+        mission_result = self.mission.create_and_execute(
+
+            goal,
+
+            "General",
+
+            5,
+
+            []
+
+        )
+
+
+
+        # Kernel Task
 
         task = self.kernel.create_task(goal)
 
 
 
-        # 2. Create workflow plan
+        # Workflow
 
         workflow_result = self.workflow.run(goal)
 
 
 
-        # 3. Route agents
+        # Agent Routing
 
         routing = self.router.route(goal)
 
 
 
-        # 4. Execute selected agents
+        # Agent Execution
 
         execution = self.executor.execute(
+
             routing["agents"],
+
             goal
+
         )
 
 
 
-        # 5. Merge results
+        # Merge Result
 
         report = self.merger.merge(
+
             execution
+
         )
 
 
 
-        # 6. Save memory
+        # Memory Save
 
         for agent in routing["agents"]:
 
             self.memory.save_execution(
+
                 goal,
+
                 agent,
+
                 "Completed execution"
+
             )
 
 
 
-        # 7. Learning
+        # Learning
 
         self.learning.learn(
+
             {
+
                 "task": goal,
-                "executed_agents": routing["agents"],
+
+                "agents": routing["agents"],
+
                 "results": execution
+
             }
+
         )
 
 
 
-        # 8. Final response
-
         final_result = {
 
+
             "goal": goal,
+
+            "decision": decision_result,
+
+            "mission": mission_result,
 
             "task": task,
 
@@ -121,18 +182,6 @@ class BrainOrchestrator:
 
         return final_result
 
-decision_result = self.decision.evaluate(goal)
-	
-	if decision_result["final_decision"] == "approval_required":
-
-    return {
-        "status": "waiting_for_approval",
-        "decision": decision_result
-    }
-
-	final_result = {
-
-	"decision": decision_result,
 
 
 brain_orchestrator = BrainOrchestrator()
