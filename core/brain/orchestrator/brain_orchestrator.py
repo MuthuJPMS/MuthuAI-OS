@@ -1,3 +1,5 @@
+from core.decision.decision_engine import decision_engine
+
 from datetime import datetime
 
 from core.kernel.os_kernel import muthuai_kernel
@@ -19,7 +21,8 @@ class BrainOrchestrator:
 
 
     def __init__(self):
-
+	
+	self.decision = decision_engine	
         self.kernel = muthuai_kernel
         self.workflow = workflow_engine
         self.router = agent_router
@@ -33,7 +36,8 @@ class BrainOrchestrator:
     def process(self, goal):
 
         print("MuthuAI Brain Processing Started...")
-
+	
+	decision_result = self.decision.evaluate(goal)
 
         # 1. Create kernel task
 
@@ -117,6 +121,18 @@ class BrainOrchestrator:
 
         return final_result
 
+decision_result = self.decision.evaluate(goal)
+	
+	if decision_result["final_decision"] == "approval_required":
+
+    return {
+        "status": "waiting_for_approval",
+        "decision": decision_result
+    }
+
+	final_result = {
+
+	"decision": decision_result,
 
 
 brain_orchestrator = BrainOrchestrator()
