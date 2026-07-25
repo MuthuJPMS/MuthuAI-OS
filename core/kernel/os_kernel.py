@@ -1,9 +1,12 @@
 from datetime import datetime
+import uuid
 
-from core.kernel.system_state import system_state
-from core.kernel.event_bus import event_bus
-from core.kernel.task_manager import task_manager
-from core.kernel.permission_manager import permission_manager
+from core.infrastructure.logger import logger
+from core.infrastructure.health_monitor import health_monitor
+from core.infrastructure.dependency_container import container
+
+from core.events.event_bus import event_bus
+
 
 
 class MuthuAIKernel:
@@ -11,74 +14,147 @@ class MuthuAIKernel:
 
     def __init__(self):
 
-        self.name = "MuthuAI OS"
-        self.version = "0.1"
+        self.tasks = {}
 
-        self.state = system_state
-        self.events = event_bus
-        self.tasks = task_manager
-        self.permissions = permission_manager
+        health_monitor.register_component(
+            "Kernel"
+        )
+
+        container.register(
+            "kernel",
+            self
+        )
+
+        logger.info(
+            "MuthuAI Kernel initialized"
+        )
 
 
 
-    def boot(self):
+    def create_task(self, goal):
 
-        self.state.update_status("running")
 
-        event = self.events.publish(
-            "SYSTEM_BOOT",
-            {
-                "system": self.name,
-                "version": self.version
+        task_id = str(uuid.uuid4())
+
+
+        task = {
+
+            "id": task_id,
+
+            "goal": goal,
+
+            "status": "created",
+
+            "created_at":
+                datetime.now().isoformat()
+
+        }
+
+
+        self.tasks[task_id] = task
+
+
+        event_bus.publish(
+
+            "task_created",
+
+            "Kernel",
+
+            task
+
+        )
+
+
+        logger.info(
+
+            f"Task created: {goal}"
+
+        )
+
+
+        return task
+
+
+
+    def update_task_status(
+
+        self,
+
+        task_id,
+
+        status
+
+    ):
+
+
+        if task_id not in self.tasks:
+
+            return {
+
+                "status": "error",
+
+                "message": "Task not found"
+
             }
+
+
+
+        self.tasks[task_id]["status"] = status
+
+
+        event_bus.publish(
+
+            "task_updated",
+
+            "Kernel",
+
+            self.tasks[task_id]
+
         )
 
-        return {
-            "system": self.name,
-            "status": "online",
-            "version": self.version,
-            "event": event,
-            "time": datetime.now().isoformat()
-        }
+
+        return self.tasks[task_id]
 
 
 
-    def create_task(self, task):
+    def get_task(self, task_id):
 
-        new_task = self.tasks.create_task(task)
+        return self.tasks.get(task_id)
 
-        self.state.add_task()
 
-        self.events.publish(
-            "TASK_CREATED",
-            new_task
+
+    def system_status(self):
+
+
+        health_monitor.update_status(
+
+            "Kernel",
+
+            "healthy",
+
+            "Kernel running"
+
         )
 
-        return new_task
-
-
-
-    def get_system_report(self):
 
         return {
 
-            "system": self.name,
 
-            "version": self.version,
+            "kernel":
 
-            "state": self.state.get_state(),
+                "active",
 
-            "tasks": self.tasks.get_tasks(),
 
-            "events": self.events.get_events()
+            "tasks":
+
+                len(self.tasks),
+
+
+            "time":
+
+                datetime.now().isoformat()
 
         }
-
-
-
-    def request_permission(self, action):
-
-        return self.permissions.request_permission(action)
 
 
 
