@@ -1,0 +1,1 @@
+from core.events.integrations.intelligence_event_handlers import intelligence_event_handlers
