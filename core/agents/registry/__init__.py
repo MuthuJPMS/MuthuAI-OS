@@ -1,0 +1,1 @@
+from core.agents.registry.agent_registry import agent_registry
