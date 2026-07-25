@@ -1,6 +1,8 @@
-from datetime import datetime
+from core.infrastructure.logger import logger
+from core.infrastructure.health_monitor import health_monitor
 
-from core.agents.router.capability.capability_router import capability_router
+from core.agents.registry.agent_registry import agent_registry
+from core.security.security_policy import security_policy
 
 
 
@@ -9,14 +11,70 @@ class AgentRouter:
 
     def __init__(self):
 
-        self.capability_router = capability_router
+        health_monitor.register_component(
+            "Agent Router"
+        )
+
+        logger.info(
+            "Agent Router initialized"
+        )
 
 
 
     def route(self, goal):
 
 
-        capability_result = self.capability_router.route(goal)
+        goal_lower = goal.lower()
+
+
+        required_capabilities = []
+
+
+        if "insurance" in goal_lower:
+
+            required_capabilities.append(
+                "insurance"
+            )
+
+
+        if "recruit" in goal_lower:
+
+            required_capabilities.append(
+                "recruitment"
+            )
+
+
+        if "content" in goal_lower:
+
+            required_capabilities.append(
+                "content"
+            )
+
+
+        if "finance" in goal_lower:
+
+            required_capabilities.append(
+                "finance"
+            )
+
+
+        selected_agents = []
+
+
+        for capability in required_capabilities:
+
+
+            agents = agent_registry.find_by_capability(
+                capability
+            )
+
+
+            for agent in agents:
+
+                selected_agents.append(
+                    agent["name"]
+                )
+
 
 
         return {
@@ -24,18 +82,15 @@ class AgentRouter:
 
             "goal": goal,
 
+            "required_capabilities":
+                required_capabilities,
 
-            "domain": capability_result["domain"],
+            "agents":
+                selected_agents,
 
+            "routing_status":
 
-            "agents": capability_result["agents"],
-
-
-            "capabilities": capability_result["capabilities"],
-
-
-            "routing_time": datetime.now().isoformat()
-
+                "completed"
 
         }
 
