@@ -1,28 +1,41 @@
 from datetime import datetime
 
-from core.agents.router.routing_rules import find_agents
+from core.agents.router.capability.capability_router import capability_router
 
 
 
 class AgentRouter:
 
 
-    def route(self, task):
+    def __init__(self):
 
-        agents = find_agents(task)
+        self.capability_router = capability_router
+
+
+
+    def route(self, goal):
+
+
+        capability_result = self.capability_router.route(goal)
 
 
         return {
 
-            "task": task,
 
-            "agents": agents,
+            "goal": goal,
 
-            "primary_agent": agents[0],
 
-            "agent_count": len(agents),
+            "domain": capability_result["domain"],
 
-            "routed_at": datetime.now().isoformat()
+
+            "agents": capability_result["agents"],
+
+
+            "capabilities": capability_result["capabilities"],
+
+
+            "routing_time": datetime.now().isoformat()
+
 
         }
 
